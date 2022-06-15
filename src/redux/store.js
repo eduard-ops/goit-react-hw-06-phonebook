@@ -1,16 +1,14 @@
-import { createStore, combineReducers } from 'redux';
+import { contactsReducer } from './contacts/contactsReducer';
 
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { configureStore } from '@reduxjs/toolkit';
 
-import reducerForm from './form/form-reducer';
-
-import contactsReducer from './contacts/contacts-reducer';
-
-const rootReducer = combineReducers({
-  form: reducerForm,
-  contacts: contactsReducer,
+export const store = configureStore({
+  reducer: {
+    items: contactsReducer.reducer,
+  },
 });
 
-const store = createStore(rootReducer, composeWithDevTools());
-
-export default store;
+store.subscribe(() => {
+  const state = store.getState();
+  window.localStorage.setItem('contacts', JSON.stringify(state.items.items));
+});
