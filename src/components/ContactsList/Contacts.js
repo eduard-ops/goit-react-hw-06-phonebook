@@ -2,14 +2,15 @@ import s from './Contacts.module.css';
 
 import PropTypes from 'prop-types';
 
-import { connect } from 'react-redux';
+import { useInfo } from 'redux/contacts/contactsReducer';
 
-import * as info from '../../redux/contacts/contacts-actions';
+export default function Contacts() {
+  const { remove, show } = useInfo();
+  const items = show();
 
-function Contacts({ item, clickDelete }) {
   return (
     <ul className={s.list}>
-      {item.map(({ id, text: { name, number } }) => {
+      {items.map(({ id, name, number }) => {
         return (
           <li key={id} className={s.item}>
             <p>{name}:</p>
@@ -17,7 +18,7 @@ function Contacts({ item, clickDelete }) {
             <button
               type="button"
               className={s.button}
-              onClick={() => clickDelete(id)}
+              onClick={() => remove(id)}
             >
               Delete
             </button>
@@ -27,26 +28,6 @@ function Contacts({ item, clickDelete }) {
     </ul>
   );
 }
-
-function showContacts(allContacts, filter) {
-  const normalizedFilter = filter.toLowerCase();
-  return allContacts.filter(
-    ({ text: { name } }) => name && name.includes(normalizedFilter)
-  );
-}
-
-const mapStateToProps = state => {
-  const { contacts, filter } = state.contacts;
-  const visibleContacts = showContacts(contacts, filter);
-
-  return { item: visibleContacts };
-};
-
-const mapDispatchToProps = dispatch => ({
-  clickDelete: id => dispatch(info.deleteContact(id)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Contacts);
 
 Contacts.propTypes = {
   clickDelete: PropTypes.func,
